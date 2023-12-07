@@ -114,16 +114,10 @@ encode_numbers = function(numbers, options, increment = 0) {
   # If there is a non-zero 'increment', it's an internal attempt to re-generate the ID.
   offset <- (offset + increment) %% nchar(alphabet) + 1
 
-  # Rearrange alphabet so that the second-half goes in front of the first-half.
-  first_half <- substr(alphabet, 1, offset - 1)
-  second_half <- substr(alphabet, offset, nchar(alphabet))
-  alphabet <- paste0(second_half, first_half, collapse="")
+  alphabet <- split_and_reverse(alphabet, offset)
 
-  # `prefix` is the first character in the generated ID, used for randomization.
-  prefix <- substr(alphabet, 1, 1)
-
-  # Reverse alphabet (otherwise for [0, x] `offset` and `separator` will be the same char)
-  alphabet <- paste0(rev(unlist(strsplit(alphabet, split=""))), collapse="")
+  # `prefix` is the last character in the generated ID, used for randomization.
+  prefix <- substr(alphabet, nchar(alphabet), nchar(alphabet))
 
   # Final ID will always have the `prefix` character at the beginning.
   ret <- c(prefix)
@@ -204,13 +198,7 @@ decode = function(id, options) {
   # `offset` is the semi-random position that was generated during encoding.
   offset <- match(prefix, unlist(strsplit(alphabet, split='')))
 
-  # Rearrange the alphabet back into it's original form.
-  first_half <- substr(alphabet, 1, offset - 1)
-  second_half <- substr(alphabet, offset, nchar(alphabet))
-  alphabet <- paste0(second_half, first_half, collapse="")
-
-  # Reverse the alphabet.
-  alphabet <- paste0(rev(unlist(strsplit(alphabet, split=""))), collapse="")
+  alphabet <- split_and_reverse(alphabet, offset)
 
   # Now it's safe to remove the prefix character from ID, it's not needed anymore.
   id <- substr(id, 2, nchar(id))
@@ -360,6 +348,25 @@ is_blocked_id = function(id, blocklist) {
 #' @returns Maximum integer value
 max_value = function() {
   return(as.integer(.Machine$integer.max))
+}
+
+#' Internal function to rearrange the alphabet at an offset, then reverse it.
+#'
+#' Before reversing the input is split based off the offset position and the
+#' first half is put after the second.
+#'   - First half: [1, offset - 1)
+#'   - Second half: [offset, nchar(alphabet)]
+#'
+#' @param alphabet Alphabet string
+#' @param offset Integer offset of start of second half
+split_and_reverse = function(alphabet, offset) {
+  # Rearrange alphabet so that the second-half goes in front of the first-half.
+  first_half <- substr(alphabet, 1, offset - 1)
+  second_half <- substr(alphabet, offset, nchar(alphabet))
+  alphabet <- paste0(second_half, first_half, collapse="")
+
+  # Reverse alphabet (otherwise for [0, x] `offset` and `separator` will be the same char)
+  alphabet <- paste0(rev(unlist(strsplit(alphabet, split=""))), collapse="")
 }
 
 reduce = function(vec, callback, initial) {
