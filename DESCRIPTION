@@ -1,0 +1,16 @@
+Package: sqids
+Type: Package
+Title: Sqids Unique ID Generator
+Version: 0.1.0
+Authors@R: c(person("sqids.org", role=c("cph"), comment="Original creator of the algorithm. Website: https://www.sqids.org"), 
+  person("Cameron", "Hayes", email="c.cash.hayes@gmail.com", role=c("aut", "cre"), comment="Implemented spec for R."))
+Maintainer: Cameron Hayes <c.cash.hayes@gmail.com>
+Description: Sqids (pronounced "squids") is a small library that lets you generate unique IDs from numbers. It's good for link shortening, fast & URL-safe ID generation and decoding back into numbers for quicker database lookups.
+URL: https://github.com/sqids/sqids-r, https://sqids.org/r
+BugReports: https://github.com/sqids/sqids-r/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests:
+  testthat
